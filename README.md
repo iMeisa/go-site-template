@@ -1,7 +1,7 @@
 
 # Setup
 
-- ***NOTE: This guide assumes you already have some knowledge on how to navigate a linux server***
+- ***NOTE: This guide assumes you already have some knowledge on how to navigate an Ubuntu linux server***
 
 ## Installation
 
@@ -81,6 +81,10 @@
         - `site_executable_name`
     6. Save and exit 
         - `ctrl+x`, `y`, `enter`
+
+2. `sudo supervisorctl reread`
+3. `sudo supervisorctl update`
+4. `sudo supervisorctl restart program_name`
 
 <hr>
 
