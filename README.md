@@ -50,7 +50,7 @@
     6. Save and exit 
         - `ctrl+x`, `y`, `enter`
 2. Link the file to sited-enabled
-    - `sudo ln -s /etc/nginx/sites-available/config_name.conf /etc/nginx/sites-enabled/config_name.conf`
+    - `sudo ln -s /etc/nginx/sites-available/config_name /etc/nginx/sites-enabled/config_name`
 3. Test the config
     - `sudo service nginx configtest`
 
