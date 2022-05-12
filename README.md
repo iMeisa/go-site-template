@@ -49,8 +49,10 @@
     5. Change `8080` to your port
     6. Save and exit 
         - `ctrl+x`, `y`, `enter`
-2. Test the config
-    - `suro service nginx configtest`
+2. Link the file to sited-enabled
+    - `sudo ln -s /etc/nginx/sites-available/config_name.conf /etc/nginx/sites-enabled/config_name.conf`
+3. Test the config
+    - `sudo service nginx configtest`
 
 3. Restart nginx
     - `sudo service nginx restart`
