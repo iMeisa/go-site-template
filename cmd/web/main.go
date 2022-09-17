@@ -1,85 +1,54 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"github.com/iMeisa/errortrace"
-	"github.com/iMeisa/go-site-template/internal/config"
-	"github.com/iMeisa/go-site-template/internal/dbDriver"
-	"github.com/iMeisa/go-site-template/internal/handlers"
-	"github.com/iMeisa/go-site-template/internal/render"
-	"github.com/joho/godotenv"
 	"log"
+	"meisa_xyz/pkg/config"
+	"meisa_xyz/pkg/handlers"
+	"meisa_xyz/pkg/render"
 	"net/http"
-	"os"
 	"time"
 )
+
+const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
 
-	// Load env file
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	// WebApp settings
-	app.Prod = os.Getenv("ENV") == "prod"
+	app.Prod = false
 
 	session = scs.New()
-	session.Lifetime = 24 * time.Hour * 3 // 3 days
+	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.Prod
 
 	app.Session = session
 
-	// Connect to db
-	log.Println("Connecting to DB...")
-	db, trace := dbDriver.ConnectSQL(os.Getenv("DBNAME"))
-	if trace.HasError() {
-		trace.Read()
-		log.Fatal()
-	}
-	//Close connection
-	defer func(SQL *sql.DB) {
-		err := SQL.Close()
-		if err != nil {
-			trace = errortrace.NewTrace(err)
-			trace.Read()
-		}
-	}(db.SQL)
-	log.Println("Connected to DB")
-
-	// Templates
-	tc, trace := render.CreateTemplateCache()
-	if trace.HasError() {
-		trace.Read()
-		log.Fatal("Cannot create template cache")
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal("cannot create template cache")
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app, db)
+	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
-	render.NewRenderer(&app)
+	render.NewTemplates(&app)
 
-	// Serve
-	fmt.Println(fmt.Sprintf("Starting %s application on port %s", os.Getenv("ENV"), os.Getenv("SITE_PORT")))
+	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 
 	srv := &http.Server{
-		Addr:    os.Getenv("SITE_PORT"),
+		Addr:    portNumber,
 		Handler: routes(&app),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
-		trace = errortrace.NewTrace(err)
-		trace.Read()
 		log.Fatal(err)
 	}
 }

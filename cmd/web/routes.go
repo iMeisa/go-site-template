@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/iMeisa/go-site-template/internal/handlers"
-	"net/http"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/iMeisa/go-site-template/internal/config"
+	"meisa_xyz/pkg/config"
+	"meisa_xyz/pkg/handlers"
+	"net/http"
 )
 
 func routes(_ *config.AppConfig) http.Handler {
@@ -17,9 +16,7 @@ func routes(_ *config.AppConfig) http.Handler {
 	mux.Use(SessionLoad)
 
 	mux.Get("/", handlers.Repo.Home)
+	mux.Get("/about", handlers.Repo.About)
 
-	// HTML static files location
-	fileServer := http.FileServer(http.Dir("./static/"))
-	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 	return mux
 }
