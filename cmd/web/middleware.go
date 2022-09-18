@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/iMeisa/go-site-template/internal/tools"
 	"github.com/justinas/nosurf"
 	"net/http"
 )
@@ -31,4 +32,29 @@ func NoSurf(next http.Handler) http.Handler {
 // SessionLoad loads and saves the sessions on every request
 func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
+}
+
+// Auth checks if the user is logged in
+func Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !tools.IsAuthenticated(r, &app) {
+			http.Redirect(w, r, "/user/auth", http.StatusSeeOther)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// LastPage inputs the last page visited in the session
+func LastPage(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Get last page from request URL
+		lastPage := r.URL.Path
+
+		// Set last page in context
+		app.Session.Put(r.Context(), "last_page", lastPage)
+
+		//fmt.Println("Last page: ", lastPage)
+
+		next.ServeHTTP(w, r)
+	})
 }
