@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "watch": true,
+    "lib": ["esnext", "dom"],
+    "outDir": "./static/js",
+  },
+  "include": ["./static/ts/*.ts"]
+}

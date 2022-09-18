@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -36,6 +37,15 @@ func main() {
 	session.Cookie.Secure = app.Prod
 
 	app.Session = session
+
+	// Compile TypeScript
+	log.Println("Compiling TypeScript...")
+	go func() {
+		err := exec.Command("tsc").Run()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	// Connect to db
 	log.Println("Connecting to DB...")
