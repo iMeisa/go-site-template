@@ -1,1 +1,1 @@
- console.log( "Hello World!" );
+document.getElementById("some-text").innerHTML = "Hello World!";
